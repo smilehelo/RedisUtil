@@ -1,23 +1,23 @@
 package cn.smilehelo.redisUtil;
 
+import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.TypeReference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import redis.clients.jedis.Jedis;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.TypeReference;
-
-import redis.clients.jedis.Jedis;
 
 /**
  * @description 单机或哨兵模式下自封装redis命令的实现类
  * @author HeLO
  * @date 2018年7月8日 下午7:24:04
  */
-public class StandaloneAndSentinelImpl implements MyRedisCommands{
+public class StandaloneAndSentinelImpl implements RedisUtilCommand {
 	
 	private static final Logger logger = LoggerFactory.getLogger(StandaloneAndSentinelImpl.class);
 
@@ -42,14 +42,13 @@ public class StandaloneAndSentinelImpl implements MyRedisCommands{
 
 	@Override
 	public boolean setString(String key, String value) {
-		return setString(key,value,JedisCenter.EXPIRETIME);
+		return setString(key,value,RedisConfigProperties.EXPIRETIME);
 	}
 
 	@Override
 	public String getString(String key) {
 		Jedis jedis = JedisCenter.getJedis();
 		String result = null;
-
 		try {
 			result = jedis.get(key);
 		} catch (Exception e) {
@@ -230,7 +229,7 @@ public class StandaloneAndSentinelImpl implements MyRedisCommands{
 		boolean result = true;
 		try {
 			jedis.hset(key, field, value);
-			jedis.expire(key, JedisCenter.EXPIRETIME); // 设置有效期时间
+			jedis.expire(key, RedisConfigProperties.EXPIRETIME); // 设置有效期时间
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
 			result = false;

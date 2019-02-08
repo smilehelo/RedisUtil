@@ -1,17 +1,18 @@
 package cn.smilehelo.redisUtil;
 
+import com.alibaba.fastjson.TypeReference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import com.alibaba.fastjson.TypeReference;
 
 
 /**
- * @description redis实际操作类，全部为静态方法
+ * @description redis实际操作类，静态方法
  * @author HeLO
  * @date 2018年7月8日 下午6:31:56
  */
@@ -19,21 +20,21 @@ public class RedisUtil {
 	
 	private static final Logger logger = LoggerFactory.getLogger(RedisUtil.class);
 	
-	protected static DecimalFormat df = new DecimalFormat("0.00");
+	static DecimalFormat df = new DecimalFormat("0.00");
 	
-	protected static final String loclStr = "This key is being used";
+	static final String loclStr = "This key is being used";
 	
-	static MyRedisCommands commands = null;
-	
+	static RedisUtilCommand commands = null;
+
 	static {
 		switch (JedisCenter.REDIS_MODE) {
-		case "standalone" :
+            case JedisCenter.REDIS_MODE_STANDALONE :
 			commands = new StandaloneAndSentinelImpl();
 			break;
-		case "sentinel" :
+		case JedisCenter.REDIS_MODE_SENTINEL:
 			commands = new StandaloneAndSentinelImpl();
 			break;
-		case "cluster" :
+		case JedisCenter.REDIS_MODE_CLUSTER :
 			commands = new ClusterImpl();
 			break;
 		}
@@ -48,10 +49,10 @@ public class RedisUtil {
 	 * @param value
 	 * @param expire 小于或等于0时，表示长期有效
 	 * @return
-	 * @author wangguohui
+	 * @author HeLO
 	 * @date 2018年5月7日下午2:59:52
 	 */
-	public static boolean setString(final String key, final String value, final Integer expire) {
+	public static boolean setString(String key, String value, Integer expire) {
 		return commands.setString(key, value, expire);
 	}
 	
@@ -61,10 +62,10 @@ public class RedisUtil {
 	 * @param key
 	 * @param value
 	 * @return
-	 * @author wangguohui
+	 * @author HeLO
 	 * @date 2018年5月23日下午2:53:50
 	 */
-	public static boolean setString(final String key, final String value) {
+	public static boolean setString( String key,  String value) {
 		return commands.setString(key, value);
 	}
 	
@@ -73,10 +74,10 @@ public class RedisUtil {
 	 * 获取String类型缓存
 	 * @param key
 	 * @return
-	 * @author wangguohui
+	 * @author HeLO
 	 * @date 2018年5月7日下午3:01:08
 	 */
-	public static String getString(final String key) {
+	public static String getString( String key) {
 		return commands.getString(key);
 	}
 	
@@ -86,7 +87,7 @@ public class RedisUtil {
 	 * @param key
 	 * @param num  正数为增，负数为减
 	 * @return 返回操作后的key值
-	 * @author wangguohui
+	 * @author HeLO
 	 * @date 2018年6月5日下午6:19:04
 	 */
 	public static Long operateNum(String key,Long num) throws Exception{
@@ -99,7 +100,7 @@ public class RedisUtil {
 	 * @param key
 	 * @return
 	 * @throws Exception
-	 * @author wangguohui
+	 * @author HeLO
 	 * @date 2018年6月5日下午6:55:53
 	 */
 	public static Long getNum(String key) throws Exception{
@@ -113,7 +114,7 @@ public class RedisUtil {
 	 * @param amt   正数为增，负数为减
 	 * @return   返回操作后的key值，保留小数点后两位
 	 * @throws Exception
-	 * @author wangguohui
+	 * @author HeLO
 	 * @date 2018年6月5日下午6:26:42
 	 */
 	public static BigDecimal operateFloat(String key, BigDecimal amt) throws Exception {
@@ -126,7 +127,7 @@ public class RedisUtil {
 	 * @param key
 	 * @return
 	 * @throws Exception
-	 * @author wangguohui
+	 * @author HeLO
 	 * @date 2018年6月5日下午6:40:27
 	 */
 	public static BigDecimal getFloat(String key) throws Exception {
@@ -142,7 +143,7 @@ public class RedisUtil {
 	 * @param bean bean实例
 	 * @return 是否设置成功，如果成功返回true
 	 */
-	public static boolean setBean(final String key, final Object bean) {
+	public static boolean setBean( String key,  Object bean) {
 		return commands.setBean(key, bean);
 	}
 	
@@ -154,7 +155,7 @@ public class RedisUtil {
 	 * @param expire 超时时间，单位秒，0表示长期有效
 	 * @return 是否设置成功，如果成功返回true
 	 */
-	public static boolean setBean(final String key, final Object bean, final Integer expire) {	
+	public static boolean setBean( String key,  Object bean,  Integer expire) {	
 		return commands.setBean(key, bean, expire);
 	}
 	
@@ -163,10 +164,10 @@ public class RedisUtil {
 	 * 获取bean，返回json字符串类型
 	 * @param key
 	 * @return
-	 * @author wangguohui
+	 * @author HeLO
 	 * @date 2018年5月22日下午6:49:21
 	 */
-	public static String getBean(final String key) {
+	public static String getBean( String key) {
 		return commands.getBean(key);
 	}
 	
@@ -178,7 +179,7 @@ public class RedisUtil {
 	 * @param type bean类型
 	 * @return bean实例
 	 */
-	public static <T> T getBean(final String key,final TypeReference<T> type) {
+	public static <T> T getBean( String key, TypeReference<T> type) {
 		return commands.getBean(key, type);
 	}
 
@@ -199,10 +200,10 @@ public class RedisUtil {
 	 * 删除缓存数据
 	 * @param key
 	 * @return 删除结果，如果成功返回true
-	 * @author wangguohui
+	 * @author HeLO
 	 * @date 2018年5月2日下午4:14:16
 	 */
-	public static boolean remove(final String key) {
+	public static boolean remove( String key) {
 		return commands.remove(key);
 	}
 	
@@ -213,7 +214,7 @@ public class RedisUtil {
 	 * 过期时间设置，如果小于等于0，则长期有效，如果大于0，则为设置的时间（秒）
 	 * @param lock
 	 * @return 
-	 * @author wangguohui
+	 * @author HeLO
 	 * @date 2018年5月7日下午2:41:23
 	 */
 	public static boolean operateRedisLock(String lock,int expire) {
@@ -225,7 +226,7 @@ public class RedisUtil {
 	 * 删除redis锁
 	 * @param lock
 	 * @return
-	 * @author wangguohui
+	 * @author HeLO
 	 * @date 2018年5月21日下午3:51:23
 	 */
 	public static boolean cancelRedisLock(String lock) {	
@@ -238,7 +239,7 @@ public class RedisUtil {
 	 * @param key 数据键
 	 * @param expire 超时时间，单位秒
 	 */
-	public static void expire(final String key, final Integer expire) {
+	public static void expire( String key,  Integer expire) {
 		commands.expire(key, expire);
 	}
 
@@ -250,10 +251,10 @@ public class RedisUtil {
 	 * @param field Hash中的key
 	 * @param value 值s
 	 * @return
-	 * @author wangguohui
+	 * @author heLO
 	 * @date 2018年5月2日下午4:17:56
 	 */
-	public static boolean setHashCached(final String key, final String field, final String value) {
+	public static boolean setHashCached( String key,  String field,  String value) {
 		return commands.setHashCached(key, field, value);
 	}
 
@@ -265,10 +266,10 @@ public class RedisUtil {
 	 * @param value hash中的field的值
 	 * @param expire 0或小于0表示长期有效
 	 * @return
-	 * @author wangguohui
+	 * @author HeLO
 	 * @date 2018年5月7日下午3:02:55
 	 */
-	public static boolean setHashCached(final String key,final String field,final String value,final Integer expire) {
+	public static boolean setHashCached( String key, String field, String value, Integer expire) {
 		return commands.setHashCached(key, field, value, expire);
 	}
 
@@ -281,10 +282,10 @@ public class RedisUtil {
 	 * @param field 
 	 * @param value
 	 * @return
-	 * @author wangguohui
+	 * @author HeLO
 	 * @date 2018年5月7日下午3:09:22
 	 */
-	public static boolean setHashCachedNX(final String key, final String field, final String value) {
+	public static boolean setHashCachedNX( String key,  String field,  String value) {
 		return commands.setHashCachedNX(key, field, value);
 	}
 
@@ -294,10 +295,10 @@ public class RedisUtil {
 	 * @param key Hash名称
 	 * @param field Hash中的key
 	 * @return
-	 * @author wangguohui
+	 * @author HeLO
 	 * @date 2018年5月2日下午4:16:12
 	 */
-	public static String getHashCached(final String key, final String field) {
+	public static String getHashCached( String key,  String field) {
 		return commands.getHashCached(key, field);
 	}
 	
@@ -307,10 +308,10 @@ public class RedisUtil {
 	 * @param key
 	 * @param field
 	 * @return
-	 * @author wangguohui
+	 * @author HeLO
 	 * @date 2018年5月2日下午4:13:55
 	 */
-	public static boolean removeHashKey(final String key, final String field) {
+	public static boolean removeHashKey( String key,  String field) {
 		return commands.removeHashKey(key, field);
 	}
 
@@ -319,10 +320,10 @@ public class RedisUtil {
 	 * 获取hash类型下所有的键值对
 	 * @param key hash的key
 	 * @return 
-	 * @author wangguohui
+	 * @author HeLO
 	 * @date 2018年5月2日下午5:03:30
 	 */
-	public static Map<String,String> getHashAll(final String key){
+	public static Map<String,String> getHashAll( String key){
 		return commands.getHashAll(key);
 	}
 	
@@ -335,7 +336,7 @@ public class RedisUtil {
 	 * @param start 开始下标，0表示第一个元素
 	 * @param end 结束下标，-1表示最后一个元素，-2表示倒数第二个元素，以此类推
 	 * @return
-	 * @author wangguohui
+	 * @author HeLO
 	 * @date 2018年5月7日下午3:32:42
 	 */
 	public static List<String> getList(String key,int start,int end) {
@@ -349,7 +350,7 @@ public class RedisUtil {
 	 * @param key
 	 * @param vaules
 	 * @return
-	 * @author wangguohui
+	 * @author HeLO
 	 * @date 2018年5月7日下午3:42:56
 	 */
 	public static boolean setLeftList(String key,String... vaules) {
@@ -362,7 +363,7 @@ public class RedisUtil {
 	 * @param key
 	 * @param vaules
 	 * @return
-	 * @author wangguohui
+	 * @author HeLO
 	 * @date 2018年5月7日下午3:42:56
 	 */
 	public static boolean setRightList(String key,String... vaules) {
@@ -374,7 +375,7 @@ public class RedisUtil {
 	 * 返回list中的元素个数
 	 * @param key
 	 * @return
-	 * @author wangguohui
+	 * @author HeLO
 	 * @date 2018年5月7日下午3:47:12
 	 */
 	public static Integer getListLength(String key) {
@@ -387,7 +388,7 @@ public class RedisUtil {
 	 * @param key
 	 * @param value
 	 * @return
-	 * @author wangguohui
+	 * @author HeLO
 	 * @date 2018年5月7日下午4:15:33
 	 */
 	public static boolean removeList(String key,String value) {
@@ -402,7 +403,7 @@ public class RedisUtil {
 	 * @param key
 	 * @param values
 	 * @return
-	 * @author wangguohui
+	 * @author HeLO
 	 * @date 2018年5月7日下午3:58:21
 	 */
 	public static boolean setSet(String key, String...values) {
@@ -414,7 +415,7 @@ public class RedisUtil {
 	 * 返回set中的所有数据
 	 * @param key
 	 * @return
-	 * @author wangguohui
+	 * @author HeLO
 	 * @date 2018年5月7日下午4:00:12
 	 */
 	public static Set<String> getSet(String key) {
@@ -426,7 +427,7 @@ public class RedisUtil {
 	 * 返回set中的元素个数
 	 * @param key
 	 * @return
-	 * @author wangguohui
+	 * @author HeLO
 	 * @date 2018年5月7日下午4:06:05
 	 */
 	public static Integer getSetLength(String key) {
@@ -439,7 +440,7 @@ public class RedisUtil {
 	 * @param key
 	 * @param values
 	 * @return
-	 * @author wangguohui
+	 * @author HeLO
 	 * @date 2018年5月7日下午4:09:07
 	 */
 	public static boolean addSet(String key,String... values) {
@@ -452,7 +453,7 @@ public class RedisUtil {
 	 * @param key
 	 * @param values
 	 * @return
-	 * @author wangguohui
+	 * @author HeLO
 	 * @date 2018年5月7日下午4:11:23
 	 */
 	public static boolean removeSet(String key,String... values) {
