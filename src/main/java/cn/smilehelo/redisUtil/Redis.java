@@ -44,6 +44,8 @@ public final class Redis extends AbstractRedis implements Serializable, AutoClos
         config.setTestOnReturn(false);
         config.setTestWhileIdle(true);
 
+        this.index = conf.database;
+
         if (conf.password != null && conf.password.length() != 0) {
             jedisPool = new JedisPool(config, conf.host, conf.port, Protocol.DEFAULT_TIMEOUT, conf.password);
             if (conf.redissonEnabled) {
